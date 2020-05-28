@@ -15,7 +15,7 @@ interface Attribute {
 	values?: string[]
 }
 
-type Token = "colors" | "space" | "icons" | "fontSizes" | "fonts" | "fontWeights"
+type Token = "colors" | "space" | "icons" | "fontSizes" | "fonts" | "fontWeights" | "illustrations"
 
 type Tokens = {
 	[key in Token]: Object
@@ -33,7 +33,8 @@ const tokenSingulars: TokenSingulars = {
 	fontSizes: "size",
 	fonts: "family",
 	fontWeights: "weight",
-	icons: "icon"
+  icons: "icon",
+  illustrations: "illustration",
 }
 
 class FigmaParser {
@@ -64,7 +65,8 @@ class FigmaParser {
 			icons: {},
 			fonts: {},
 			fontWeights: {},
-			fontSizes: {}
+      fontSizes: {},
+      illustrations: {},
 		}
 
 		const document = await this.request()
@@ -193,9 +195,9 @@ class FigmaParser {
 				if (this.tokens.indexOf("fontWeights") > -1 && nameParts[1] === "style") {
 					this.output.fontWeights[nameParts.slice(2).join("")] = layer["style"]["fontWeight"]
 				}
-			}
+      }
 
-			/**
+      /**
 			 * Icon
 			 */
 			if (this.tokens.indexOf("icons") > -1 && role === "icon") {
@@ -205,6 +207,17 @@ class FigmaParser {
 					if (paths.length > 0) {
 						this.output.icons[nameParts.slice(1).join("")] = paths.map(path => path.substr(3, path.length - 4))
 					}
+				} catch (err) {}
+			}
+
+      /**
+       * Illustrations
+       */
+      if (this.tokens.indexOf("illustrations") > -1 && role === "illustration") {
+        try {
+          const image = await this.getImage(page.id)
+          const illustrationName = nameParts.map(name => name.charAt(0).toUpperCase() + name.slice(1));
+          this.output.illustrations[illustrationName.slice(1).join("")] = image
 				} catch (err) {}
 			}
 		}

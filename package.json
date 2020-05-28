@@ -14,7 +14,8 @@
 	"homepage": "https://github.com/rihardsgravis/figma-parser#readme",
 	"main": "dist/index.js",
 	"scripts": {
-		"build": "tsc",
+    "build": "tsc",
+    "watch": "tsc --watch",
 		"prepublish": "npm run build"
 	},
 	"dependencies": {
